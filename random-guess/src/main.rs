@@ -3,7 +3,6 @@ use rand::Rng;
 
 fn main() {
     let random_number = rand::thread_rng().gen_range(1..=100);
-
     loop {
         let mut input_number = String::new();
         println!("Input your guess in range 1 to 100");
