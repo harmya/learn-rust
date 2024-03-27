@@ -68,8 +68,6 @@ fn init_board() -> Board {
     return board_struct;
 }
 
-
-
 fn valid_generated_ship(board: &Board, ship_size: i8, start_index: i8, row_or_col: i8, ship_orientation: &ORIENTATION) -> bool {
     match ship_orientation {
         ORIENTATION::Vertical => {
@@ -89,10 +87,12 @@ fn valid_generated_ship(board: &Board, ship_size: i8, start_index: i8, row_or_co
     };
     return true;
 }
+
 fn initialize_battleships(board: &mut Board, ship_type: BATTLESHIP, ship_count: i8) {
     let ship_size: i8 = ship_type.get_ship_size();
     board.num_ships += ship_count;
     board.open_space_left -= ship_size * ship_count;
+    
     if board.open_space_left < 0 {
         println!("bro");
     }
