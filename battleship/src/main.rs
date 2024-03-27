@@ -22,13 +22,6 @@ enum BATTLESHIP {
     Small
 }
 impl BATTLESHIP {
-    fn get_num_ships(&self) -> i8 {
-        match self {
-            BATTLESHIP::Big => {return NUM_BIG_SHIPS},
-            BATTLESHIP::Medium => {return NUM_MEDIUM_SHIPS},
-            BATTLESHIP::Small => {return NUM_SMALL_SHIPS}
-        }
-    }
     fn get_ship_size(&self) -> i8 {
         match self {
             BATTLESHIP::Big => {return BIG_SHIP_SIZE},
@@ -62,9 +55,9 @@ fn init_board() -> Board {
     let num_ships = 0;
     let open_space_left = BOARD_DIMENSION * BOARD_DIMENSION;
     let mut board_struct = Board{ board: board, num_ships: num_ships, open_space_left: open_space_left as i8};
-    initialize_battleships(&mut board_struct, BATTLESHIP::Big, 1);
-    initialize_battleships(&mut board_struct, BATTLESHIP::Medium, 2);
-    initialize_battleships(&mut board_struct, BATTLESHIP::Small, 4);
+    initialize_battleships(&mut board_struct, BATTLESHIP::Big, NUM_BIG_SHIPS);
+    initialize_battleships(&mut board_struct, BATTLESHIP::Medium, NUM_MEDIUM_SHIPS);
+    initialize_battleships(&mut board_struct, BATTLESHIP::Small, NUM_SMALL_SHIPS);
     return board_struct;
 }
 
