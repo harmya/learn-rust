@@ -38,7 +38,7 @@ struct Board {
 }
 
 fn main() {
-    let mut board = init_board();
+    let board = init_board();
     show_board(&board);
 }
 
