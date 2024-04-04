@@ -38,8 +38,10 @@ struct Board {
 }
 
 fn main() {
-    let board = init_board();
-    show_board(&board);
+    let board_player_1 = init_board();
+    let board_player_2 = init_board();
+    show_board(&board_player_1);
+    show_board(&board_player_2)
 }
 
 fn show_board(board : &Board) {
@@ -55,9 +57,12 @@ fn init_board() -> Board {
     let num_ships = 0;
     let open_space_left = BOARD_DIMENSION * BOARD_DIMENSION;
     let mut board_struct = Board{ board: board, num_ships: num_ships, open_space_left: open_space_left};
+
     initialize_battleships(&mut board_struct, BATTLESHIP::Big, NUM_BIG_SHIPS);
     initialize_battleships(&mut board_struct, BATTLESHIP::Medium, NUM_MEDIUM_SHIPS);
     initialize_battleships(&mut board_struct, BATTLESHIP::Small, NUM_SMALL_SHIPS);
+
+
     return board_struct;
 }
 
