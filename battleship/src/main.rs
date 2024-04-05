@@ -1,3 +1,5 @@
+use std::io;
+
 use rand::Rng;
 
 const BOARD_DIMENSION : usize = 10;
@@ -38,18 +40,38 @@ struct Board {
 }
 
 fn main() {
-    let board_player_1 = init_board();
-    let board_player_2 = init_board();
-    show_board(&board_player_1);
-    show_board(&board_player_2)
-}
+    let mut board_player_1 = init_board();
+    let mut board_player_2 = init_board();
+    
+    loop {
+        
+        show_board(&board_player_1);
+        show_board(&board_player_2);
 
-fn show_board(board : &Board) {
-    for row in board.board {
-        println!("{:?}", row);
+        break;
+
+        let player_1_input = get_player_input(1);
+        let player_2_input = get_player_input(2);
+
+        println!("{} {}", player_1_input.0, player_1_input.1);
+
+        println!("{}", board_player_2.board[player_1_input.0][player_1_input.1]);
+        println!("{}", board_player_1.board[player_2_input.0][player_2_input.1]);
+        
+        if board_player_2.board[player_1_input.0][player_1_input.1] == 1 {
+            update_player_board(&mut board_player_2, player_1_input);
+            println!("Player 1 HIT!!!")
+        }
+
+        if board_player_1.board[player_2_input.0][player_2_input.1] == 1 {
+            update_player_board(&mut board_player_1, player_2_input);
+            println!("Player 2 HIT!!!")
+        }
+
+        println!("Boards after turn");
+
+
     }
-    println!("{}", board.num_ships);
-    println!("{}", board.open_space_left);
 }
 
 fn init_board() -> Board {
@@ -62,22 +84,100 @@ fn init_board() -> Board {
     initialize_battleships(&mut board_struct, BATTLESHIP::Medium, NUM_MEDIUM_SHIPS);
     initialize_battleships(&mut board_struct, BATTLESHIP::Small, NUM_SMALL_SHIPS);
 
-
     return board_struct;
+}
+
+fn show_board(board : &Board) {
+    for row in board.board {
+        print!("|");
+        for value in row {
+            if value == 0 {
+                print!(" |")
+            } else {
+                print!("*|")
+            }
+        }
+        print!(" |");
+        println!();
+    }
+    println!("{}", board.num_ships);
+    println!("{}", board.open_space_left);
+}
+
+fn get_player_input(player_number : u8) -> (usize, usize) {
+    loop {
+        println!("Player {player_number}, type i,j as the box to hit where i ≤ 10 and j ≤ 10");
+        let mut player_input = String::new();
+        io::stdin()
+        .read_line(&mut player_input)
+        .expect("perchance....no line?");
+    
+        let player_input : Vec<&str> = player_input.split(',').collect();
+
+        if player_input.len() != 2 {
+            println!("ERROR: perchance....input a number?");
+            continue;
+        }
+        
+        let player_shot_row  = match player_input[0].trim()
+            .parse() {
+                Ok(n) => n,
+                Err(_) => {
+                    println!("ERROR: Perchance....check your number? \n");
+                    continue;
+                }
+            };
+        
+        let player_shot_col = match player_input[1].trim()
+            .parse() {
+                Ok(n) => n,
+                Err(_) => {
+                    println!("ERROR: Perchance....check your number?");
+                    continue;
+                }
+            };
+
+        if player_shot_row >= BOARD_DIMENSION || player_shot_col >= BOARD_DIMENSION{
+            println!("Input a number less than {}", BOARD_DIMENSION);
+            continue;
+        }
+
+        return (player_shot_row, player_shot_col);
+    }
+    
+}
+
+fn update_player_board(board : &mut Board, hit_location : (usize, usize)) {
+    board.board[hit_location.0][hit_location.1] = 0;
+    board.open_space_left += 1;
+
+}
+
+fn is_near_another_ship(board: &Board, row : usize, col : usize) -> bool {
+    if row > 0 && board.board[row - 1][col] == 1 {
+        return true;
+    } else if row < BOARD_DIMENSION - 1 && board.board[row + 1][col] == 1 {
+        return true;
+    } else if col > 0 && board.board[row][col - 1] == 1 {
+        return true;
+    } else if col < BOARD_DIMENSION - 1 && board.board[row][col + 1] == 1 {
+        return true;
+    }
+    return false;
 }
 
 fn valid_generated_ship(board: &Board, ship_size : usize, start_index: usize, row_or_col: usize, ship_orientation: &ORIENTATION) -> bool {
     match ship_orientation {
         ORIENTATION::Vertical => {
             for i in start_index..start_index + ship_size {
-                if board.board[i as usize][row_or_col as usize] == 1 {
+                if board.board[i][row_or_col] == 1 || is_near_another_ship(board, i, row_or_col) {
                     return false;
                 }
             }
         },
         ORIENTATION::Horizontal => {
             for i in start_index..start_index + ship_size {
-                if board.board[row_or_col as usize][i as usize] == 1 {
+                if board.board[row_or_col][i] == 1 || is_near_another_ship(board, row_or_col, i) {
                     return false
                 }
             }
